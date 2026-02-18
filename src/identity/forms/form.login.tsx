@@ -8,10 +8,59 @@ import {
   CardContent,
 } from "@/components/ui/card";
 
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form";
+import { LoginPayload, loginSchema } from "@/src/identity/schemas/login.schema";
+import { toast } from "sonner";
+import { Spinner } from "@/components/ui/spinner";
+import { ApiError } from "@/src/identity/errors/api.error";
+import { loginUser } from "@/src/identity/services/auth.service";
 
 export default function LoginForm() {
+  const form = useForm<LoginPayload>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  async function onSubmit(data: LoginPayload) {
+    try {
+      await loginUser(data);
+    } catch (e) {
+      if (e instanceof ApiError) {
+        switch (e.status) {
+          case 401:
+            toast.error("Invalid Credentials", {
+              description: "Invalid email or password.",
+            });
+            break;
+          case 429:
+            toast.error("Too many attempts", {
+              description: "Please wait a moment and try again.",
+            });
+            break;
+          default:
+            toast.error("Something went wrong", {
+              description: "Please try again later.",
+            });
+        }
+        return;
+      }
+
+      toast.error("Something went wrong", {
+        description: "Check your connection and try again.",
+      });
+    }
+  }
   return (
     <div className="w-fit h-fit mx-auto">
       <Card className="w-96 max-w-md">
@@ -22,27 +71,56 @@ export default function LoginForm() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form id="login-form" onSubmit={form.handleSubmit(onSubmit)}>
             <FieldGroup>
               <div className="space-y-4">
-                <Field>
-                  <FieldLabel htmlFor="email-address">Email Address</FieldLabel>
-                  <Input
-                    id="email-address"
-                    type="email"
-                    placeholder="m@example.com"
-                    required
-                  />
-                </Field>
-                <Field>
-                  <FieldLabel htmlFor="password">Password</FieldLabel>
-                  <Input id="password" type="password" required />
-                </Field>
+                <Controller
+                  name="email"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="email">Email Address</FieldLabel>
+                      <Input
+                        {...field}
+                        id="email"
+                        type="email"
+                        placeholder="m@example.com"
+                        aria-invalid={fieldState.invalid}
+                      />
+                      {fieldState.error && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+                <Controller
+                  name="password"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="password">Password</FieldLabel>
+                      <Input
+                        {...field}
+                        id="password"
+                        type="password"
+                        aria-invalid={fieldState.invalid}
+                      />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
               </div>
 
               <Field>
-                <Button className="w-full" type="submit">
-                  Log in
+                <Button
+                  disabled={form.formState.isSubmitting}
+                  className="w-full"
+                  type="submit"
+                  form="login-form"
+                >
+                  {form.formState.isSubmitting ? <Spinner /> : "Sign in"}
                 </Button>
               </Field>
             </FieldGroup>
