@@ -1,4 +1,4 @@
-import LoginForm from "@/src/identity/forms/form.login";
+import LoginForm from "@/src/identity/forms/login.form";
 import { Vote } from "lucide-react";
 import Link from "next/link";
 

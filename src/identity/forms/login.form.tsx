@@ -1,4 +1,5 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -7,60 +8,43 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { LoginPayload, loginSchema } from "@/src/identity/schemas/login.schema";
 import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
-import { ApiError } from "@/src/identity/errors/api.error";
-import { loginUser } from "@/src/identity/services/auth.service";
+import { loginAction } from "@/src/identity/actions/auth.actions";
 
 export default function LoginForm() {
   const form = useForm<LoginPayload>({
     resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
+    defaultValues: { email: "", password: "" },
   });
 
   async function onSubmit(data: LoginPayload) {
-    try {
-      await loginUser(data);
-    } catch (e) {
-      if (e instanceof ApiError) {
-        switch (e.status) {
-          case 401:
-            toast.error("Invalid Credentials", {
-              description: "Invalid email or password.",
-            });
-            break;
-          case 429:
-            toast.error("Too many attempts", {
-              description: "Please wait a moment and try again.",
-            });
-            break;
-          default:
-            toast.error("Something went wrong", {
-              description: "Please try again later.",
-            });
-        }
-        return;
-      }
+    const result = await loginAction(data);
+    if (!result) return;
 
-      toast.error("Something went wrong", {
-        description: "Check your connection and try again.",
-      });
+    switch (result.status) {
+      case 401:
+        toast.error("Invalid credentials", {
+          description: "Invalid email or password.",
+        });
+        break;
+      case 429:
+        toast.error("Too many attempts", {
+          description: "Please wait a moment and try again.",
+        });
+        break;
+      default:
+        toast.error("Something went wrong", {
+          description: "Please try again later.",
+        });
     }
   }
+
   return (
     <div className="w-fit h-fit mx-auto">
       <Card className="w-96 max-w-md">
