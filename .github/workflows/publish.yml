@@ -44,6 +44,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
+          platforms: linux/amd64
           target: runner
           push: ${{ github.event_name == 'push' }}
           tags: ${{ steps.meta.outputs.tags }}
