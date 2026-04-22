@@ -27,7 +27,7 @@ class IdentityService {
     await fetch(`${this.baseUrl}/api/auth/logout`, {
       method: "POST",
       headers: {
-        "Cookie": `token=${token}`,
+        "Authorization": `Bearer ${token}`,
       },
     }).catch(() => null);
   }
