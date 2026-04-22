@@ -18,7 +18,7 @@ class VoteService {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
+        "Cookie": `token=${token}`,
       },
       body: JSON.stringify(payload),
     });

@@ -8,7 +8,7 @@ class BallotService {
   async listBallots(token?: string): Promise<ElectionSummary[]> {
     const res = await fetch(`${this.baseUrl}/api/ballots`, {
       next: { revalidate: 30 },
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      headers: token ? { Cookie: `token=${token}` } : {},
     });
     if (!res.ok) return [];
     return res.json();
@@ -17,7 +17,7 @@ class BallotService {
   async getBallot(electionId: string, token?: string): Promise<ElectionDetail | null> {
     const res = await fetch(`${this.baseUrl}/api/ballots/${electionId}`, {
       next: { revalidate: 30 },
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      headers: token ? { Cookie: `token=${token}` } : {},
     });
     if (res.status === 404) return null;
     if (!res.ok) return null;
