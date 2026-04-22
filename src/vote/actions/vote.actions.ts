@@ -10,7 +10,7 @@ type CastResult =
 
 type VerifyResult =
   | { ok: true; data: VoteVerification }
-  | { ok: false; status: 401 | 404 | 500 };
+  | { ok: false; status: 404 | 429 | 500 };
 
 export async function castVoteAction(payload: VotePayload): Promise<CastResult> {
   const token = (await cookies()).get("token")?.value;
@@ -19,7 +19,5 @@ export async function castVoteAction(payload: VotePayload): Promise<CastResult> 
 }
 
 export async function verifyVoteAction(receiptId: string): Promise<VerifyResult> {
-  const token = (await cookies()).get("token")?.value;
-  if (!token) return { ok: false, status: 401 };
-  return voteService.verifyVote(token, receiptId);
+  return voteService.verifyVote(receiptId);
 }
