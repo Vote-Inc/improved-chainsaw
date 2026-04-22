@@ -20,7 +20,7 @@ export async function loginAction(
     sameSite: "lax",
     path: "/",
     maxAge: result.data.expiresIn,
-    secure: process.env.NODE_ENV === "production",
+    secure: false,
   });
 
   redirect("/");

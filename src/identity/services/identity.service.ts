@@ -10,7 +10,6 @@ class IdentityService {
   }
 
   async login(payload: LoginPayload): Promise<LoginResult> {
-    console.log(this.baseUrl);
     const res = await fetch(`${this.baseUrl}/api/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
