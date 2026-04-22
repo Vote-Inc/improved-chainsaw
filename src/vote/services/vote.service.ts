@@ -30,8 +30,15 @@ class VoteService {
     return { ok: true, receiptId: body.receiptId };
   }
 
-  async verifyVote(receiptId: string): Promise<VerifyResult> {
-    const res = await fetch(`${this.baseUrl}/api/votes/verify/${receiptId}`);
+  async verifyVote(token: string, receiptId: string): Promise<VerifyResult> {
+    const res = await fetch(`${this.baseUrl}/api/votes/verify`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Cookie": `token=${token}`,
+      },
+      body: JSON.stringify({ receiptId }),
+    });
     if (res.status === 404) return { ok: false, status: 404 };
     if (!res.ok) return { ok: false, status: 500 };
     return { ok: true, data: await res.json() };
