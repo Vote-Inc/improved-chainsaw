@@ -34,6 +34,6 @@ export async function logoutAction(): Promise<void> {
     await identityService.logout(token);
   }
 
-  jar.set("token", "", { httpOnly: true, sameSite: "lax", path: "/", maxAge: 0 });
+  jar.delete("token");
   redirect("/login");
 }
