@@ -1,10 +1,12 @@
+import { cookies } from "next/headers";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "@/src/ballot/components/status-badge";
 import { ballotService } from "@/src/ballot/services/ballot.service";
 
 export async function BallotList() {
-  const ballots = await ballotService.listBallots();
+  const token = (await cookies()).get("token")?.value;
+  const ballots = await ballotService.listBallots(token);
 
   if (ballots.length === 0) {
     return (

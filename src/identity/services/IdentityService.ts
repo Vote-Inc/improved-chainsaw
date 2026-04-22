@@ -1,7 +1,7 @@
 import { LoginPayload } from "@/src/identity/schemas/login.schema";
 
 type LoginResult =
-  | { ok: true; data: { user: { id: string; email: string }; token: string } }
+  | { ok: true; data: { token: string; expiresIn: number } }
   | { ok: false; error: string; status: number };
 
 class IdentityService {

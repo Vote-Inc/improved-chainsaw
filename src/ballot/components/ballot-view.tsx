@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { StatusBadge } from "@/src/ballot/components/status-badge";
 import { VoteForm } from "@/src/vote/forms/form.vote";
@@ -8,7 +9,8 @@ interface BallotViewProps {
 }
 
 export async function BallotView({ electionId }: BallotViewProps) {
-  const ballot = await ballotService.getBallot(electionId);
+  const token = (await cookies()).get("token")?.value;
+  const ballot = await ballotService.getBallot(electionId, token);
 
   if (!ballot) notFound();
 

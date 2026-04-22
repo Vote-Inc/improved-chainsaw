@@ -5,17 +5,19 @@ class BallotService {
     return process.env.API_URL!;
   }
 
-  async listBallots(): Promise<ElectionSummary[]> {
+  async listBallots(token?: string): Promise<ElectionSummary[]> {
     const res = await fetch(`${this.baseUrl}/ballots`, {
       next: { revalidate: 30 },
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
     if (!res.ok) return [];
     return res.json();
   }
 
-  async getBallot(electionId: string): Promise<ElectionDetail | null> {
+  async getBallot(electionId: string, token?: string): Promise<ElectionDetail | null> {
     const res = await fetch(`${this.baseUrl}/ballots/${electionId}`, {
       next: { revalidate: 30 },
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
     if (res.status === 404) return null;
     if (!res.ok) return null;
