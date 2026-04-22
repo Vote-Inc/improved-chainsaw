@@ -1,7 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { voteService } from "@/src/vote/services/VoteService";
+import { voteService } from "@/src/vote/services/vote.service";
 import { VotePayload, VoteVerification } from "@/src/vote/types/vote.type";
 
 type CastResult =

@@ -14,7 +14,7 @@ class VoteService {
   }
 
   async castVote(token: string, payload: VotePayload): Promise<CastResult> {
-    const res = await fetch(`${this.baseUrl}/votes`, {
+    const res = await fetch(`${this.baseUrl}/api/votes`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -31,7 +31,7 @@ class VoteService {
   }
 
   async verifyVote(receiptId: string): Promise<VerifyResult> {
-    const res = await fetch(`${this.baseUrl}/votes/verify/${receiptId}`);
+    const res = await fetch(`${this.baseUrl}/api/votes/verify/${receiptId}`);
     if (res.status === 404) return { ok: false, status: 404 };
     if (!res.ok) return { ok: false, status: 500 };
     return { ok: true, data: await res.json() };

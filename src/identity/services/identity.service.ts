@@ -10,7 +10,8 @@ class IdentityService {
   }
 
   async login(payload: LoginPayload): Promise<LoginResult> {
-    const res = await fetch(`${this.baseUrl}/auth/login`, {
+    console.log(this.baseUrl);
+    const res = await fetch(`${this.baseUrl}/api/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -21,6 +22,13 @@ class IdentityService {
       return { ok: false, error: body?.error ?? "Authentication failed", status: res.status };
     }
     return { ok: true, data: body };
+  }
+
+  async logout(token: string): Promise<void> {
+    await fetch(`${this.baseUrl}/api/auth/logout`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+    }).catch(() => null);
   }
 }
 

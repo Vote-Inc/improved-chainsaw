@@ -6,7 +6,7 @@ class BallotService {
   }
 
   async listBallots(token?: string): Promise<ElectionSummary[]> {
-    const res = await fetch(`${this.baseUrl}/ballots`, {
+    const res = await fetch(`${this.baseUrl}/api/ballots`, {
       next: { revalidate: 30 },
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
@@ -15,7 +15,7 @@ class BallotService {
   }
 
   async getBallot(electionId: string, token?: string): Promise<ElectionDetail | null> {
-    const res = await fetch(`${this.baseUrl}/ballots/${electionId}`, {
+    const res = await fetch(`${this.baseUrl}/api/ballots/${electionId}`, {
       next: { revalidate: 30 },
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
