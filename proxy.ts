@@ -1,32 +1,21 @@
-import { NextRequest, NextResponse } from "next/server";
+import {NextRequest, NextResponse} from "next/server";
+import {cookies} from "next/headers";
 
 const publicRoutes = ['/login']
-
-function isTokenExpired(token: string): boolean {
-  try {
-    const payload = JSON.parse(
-      Buffer.from(token.split('.')[1], 'base64url').toString()
-    );
-    return typeof payload.exp === 'number' && payload.exp * 1000 < Date.now();
-  } catch {
-    return true;
-  }
-}
 
 export default async function proxy(req: NextRequest) {
   const path = req.nextUrl.pathname
   const isPublicRoute = publicRoutes.includes(path)
 
-  const token = req.cookies.get('token')?.value
-  const isAuthenticated = !!token && !isTokenExpired(token)
+  const token = (await cookies()).get('token')?.value
 
-  if (!isPublicRoute && !isAuthenticated) {
+  if (!isPublicRoute && !token) {
     return NextResponse.redirect(new URL('/login', req.nextUrl))
   }
 
   if (
-    isPublicRoute &&
-    !req.nextUrl.pathname.startsWith('/')
+      isPublicRoute &&
+      !req.nextUrl.pathname.startsWith('/')
   ) {
     return NextResponse.redirect(new URL('/', req.nextUrl))
   }

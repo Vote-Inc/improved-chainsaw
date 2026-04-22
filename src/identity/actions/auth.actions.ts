@@ -15,6 +15,7 @@ export async function loginAction(
   }
 
   const jar = await cookies();
+  console.log(result);
   jar.set("token", result.data.token, {
     httpOnly: true,
     sameSite: "lax",
