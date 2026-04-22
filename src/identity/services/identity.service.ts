@@ -26,7 +26,9 @@ class IdentityService {
   async logout(token: string): Promise<void> {
     await fetch(`${this.baseUrl}/api/auth/logout`, {
       method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {
+        "Cookie": `token=${token}`,
+      },
     }).catch(() => null);
   }
 }
